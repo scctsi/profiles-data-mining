@@ -1,0 +1,9 @@
+<SearchOptions>
+    <MatchOptions>
+        <SearchString ExactMatch="false">Insulin</SearchString>
+    </MatchOptions>
+    <OutputOptions>
+        <Offset>0</Offset>
+        <Limit>0</Limit>
+    </OutputOptions>
+</SearchOptions>

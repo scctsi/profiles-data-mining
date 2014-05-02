@@ -1,0 +1,6 @@
+<SearchOptions>
+    <MatchOptions>
+        <SearchString ExactMatch="false">Insulin</SearchString>
+        <ClassGroupURI>http://profiles.catalyst.harvard.edu/ontology/prns#ClassGroupConcepts</ClassGroupURI>
+    </MatchOptions>
+</SearchOptions>
