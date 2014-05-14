@@ -14,6 +14,11 @@ var findPubCountOnConceptForYear = function (req, res, next) {
         if (exists) {
             return next(new restify.ServiceUnavailableError("Already processing a request..."));
         } else {
+            /* respond to http request with started... */
+            res.setHeader('content-type', 'text/plain');
+            res.send({ status: "started" });
+            next();
+
             /* create tables and get concept list from Profiles... */
             Promise.allOrNone([
                 server.dbClient.createTables(),
@@ -25,9 +30,6 @@ var findPubCountOnConceptForYear = function (req, res, next) {
                     server.dbClient.populateConcepts(results[1]),
                     server.dbClient.populatePubs(results[2])
                 ]).then(function () {
-                    res.setHeader('content-type', 'text/plain');
-                    res.send({ status: "works" });
-                    return next();
                 }, errorHandler);
             }, errorHandler);
         }
