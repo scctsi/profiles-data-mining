@@ -1,0 +1,21 @@
+{
+    "name": "profile_data_mining",
+    "description": "An app to take an year in the http request and find out how many publications have been made on each concept in that year in profiles database",
+    "version": "0.0.1",
+    "private": true,
+    "dependencies": {
+        "restify": ">=2.x",
+        "xmlbuilder": ">=2.1.0",
+        "jquery": ">=2.1.0",
+        "node-promise": ">=0.5.4",
+        "xmldom": ">=0.1.19",
+        "bunyan": ">=0.22.1",
+        "bunyan-prettystream": ">=0.1.3",
+        "request": ">=2.34.0",
+        "URIjs": ">=1.13.1",
+        "pg": ">=3.1.0"
+    },
+    "engines": {
+        "node": ">=0.10.15"
+    }
+}

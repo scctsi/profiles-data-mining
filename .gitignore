@@ -28,3 +28,7 @@ algo.txt
 
 # nodejs modules
 node_modules
+
+# others
+req_formats/*.rdf
+result.xml
