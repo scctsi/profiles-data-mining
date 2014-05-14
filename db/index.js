@@ -15,11 +15,18 @@ dbClient.connect(function (err) {
     }
 });
 
+function forEachRow(buff, processor) {
+    var rows = buff.split('\n');
+
+    for (var i = 0; i < rows.length - 1; ++ i) {
+        processor(rows[i].split('\t'));
+    }
+
+    buff = rows[rows.length - 1];
+}
+
 function query(text, errMsg, resultProcessor) {
     var promise = new Promise.Promise();
-
-    /* DEBUG */
-    server.log.info("Executing: " + text);
 
     dbClient.query(text, function (err, result) {
         if (err) {
@@ -36,9 +43,6 @@ function query(text, errMsg, resultProcessor) {
 
 function paramQuery(text, params, errMsg, resultProcessor) {
     var promise = new Promise.Promise();
-
-    /* DEBUG */
-    server.log.info("Executing: " + text);
 
     dbClient.query(text, params, function (err, result) {
         if (err) {
@@ -120,6 +124,52 @@ dbClient.populatePubs = function (pubs) {
     });
 
     return paramQuery(insert_sql, params, "Failed to insert into concepts!!!");
+}
+
+dbClient.onAllPubs = function (processor) {
+    var buff = ""
+    var promises = new Array();
+    var clientPromise = new Promise.Promise();
+
+    var stream = dbClient.copyTo("COPY publications TO STDOUT");
+ 
+    /* 
+     * concatinate new chunk with left over data, parse as many rows as possible
+     * from buff and process them... 
+     */
+    stream.on('data', function (chunk) {
+        buff += chunk.toString();
+        
+        forEachRow(buff, function (row) {
+            promises.push(processor(row));
+        });
+    });
+
+    stream.on('end', function () {
+        Promise.all(promises).then(function () {
+            clientPromise.resolve();
+        }, function (err) {
+            clientPromise.reject(err);
+        });
+    });
+    
+    return clientPromise;
+}
+
+dbClient.incrementConceptCount = function (profiles_id) {
+   return query(
+          "UPDATE concepts                      "
+        + "     SET pub_count = pub_count + 1   "
+        + "     WHERE profiles_id = " + profiles_id
+        , "Failed to increment pub_count!!!");
+}
+
+dbClient.markPubAsProcessed = function (id) {
+    return query(
+          "UPDATE publications          "
+        + "     SET processes = true    "
+        + "     WHERE id = " + id
+        , "Failed to mark publication as processed!!!");
 }
 
 server = module.parent.exports.server;

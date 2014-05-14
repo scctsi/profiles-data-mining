@@ -6,7 +6,7 @@ var
 var findPubCountOnConceptForYear = function (req, res, next) {
     var errorHandler = function (err) {
         server.log.error(err);
-        return next(new restify.InternalError(err));
+        return next(new restify.InternalError(err ? err : "Something bad happened!!!"));
     }
 
     /* Check if another task is going on... */
@@ -30,6 +30,11 @@ var findPubCountOnConceptForYear = function (req, res, next) {
                     server.dbClient.populateConcepts(results[1]),
                     server.dbClient.populatePubs(results[2])
                 ]).then(function () {
+                    /* go through all the publications and increment the counts of corresponding concepts... */
+                    server.dbClient.onAllPubs(server.profilesClient.incrementSubjectAreaCount).then(function () {
+                        /* send notification... */
+                        server.log.info("Completed!!!");
+                    }, errorHandler);
                 }, errorHandler);
             }, errorHandler);
         }
