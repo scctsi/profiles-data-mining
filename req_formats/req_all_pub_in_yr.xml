@@ -3,9 +3,7 @@
         <SearchString ExactMatch="false"></SearchString>
         <ClassGroupURI>http://profiles.catalyst.harvard.edu/ontology/prns#ClassGroupResearch</ClassGroupURI>
         <SearchFiltersList>
-            <SearchFilter IsExclude="0" Property="http://profiles.catalyst.harvard.edu/ontology/prns#year" MatchType="Exact">
-                1980
-            </SearchFilter>
+            <SearchFilter IsExclude="0" Property="http://profiles.catalyst.harvard.edu/ontology/prns#year" MatchType="Exact">1980</SearchFilter>
         </SearchFiltersList>
     </MatchOptions>
     <OutputOptions>

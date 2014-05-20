@@ -3,4 +3,8 @@
         <SearchString ExactMatch="false"></SearchString>
         <ClassGroupURI>http://profiles.catalyst.harvard.edu/ontology/prns#ClassGroupConcepts</ClassGroupURI>
     </MatchOptions>
+    <OutputOptions>
+      <Offset>0</Offset>
+      <Limit>10</Limit>
+    </OutputOptions>
 </SearchOptions>

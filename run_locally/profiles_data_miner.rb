@@ -49,7 +49,7 @@ class ProfilesDataMiner
     HERE
   end
 
-  def mine(limit)
+  def mine(year, limit)
     offset = next_offset
     ap_options = { :plain => true }
 
@@ -110,6 +110,6 @@ result = ''
 miner = ProfilesDataMiner.new
 
 while result != 'Finished'
-  result = miner.mine(100)
+  result = miner.mine('2013', 100)
 end
 
