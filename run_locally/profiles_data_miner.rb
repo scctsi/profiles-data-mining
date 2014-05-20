@@ -49,7 +49,26 @@ class ProfilesDataMiner
     HERE
   end
 
-  def mine(year, limit)
+  def list_publications_by_concept_and_year_api_call_body_xml(concept_uri, publication_year)
+    <<-HERE
+    <SearchOptions>
+      <MatchOptions>
+        <SearchString ExactMatch="false"></SearchString>
+        <ClassGroupURI>http://profiles.catalyst.harvard.edu/ontology/prns#ClassGroupResearch</ClassGroupURI>
+        <SearchFiltersList>
+          <SearchFilter IsExclude="0" Property="http://vivoweb.org/ontology/core#hasSubjectArea" MatchType="Exact">#{concept_uri}</SearchFilter>
+          <SearchFilter IsExclude="0" Property="http://profiles.catalyst.harvard.edu/ontology/prns#year" MatchType="Exact">#{1980}{publication_year}</SearchFilter>
+        </SearchFiltersList>
+      </MatchOptions>
+      <OutputOptions>
+        <Offset>0</Offset>
+        <Limit>1</Limit>
+      </OutputOptions>
+    </SearchOptions>
+    HERE
+  end
+
+  def mine(limit = 100)
     offset = next_offset
     ap_options = { :plain => true }
 
@@ -77,6 +96,15 @@ class ProfilesDataMiner
 
     commit_concepts_to_file(concepts)
     commit_bookmark(offset + limit)
+  end
+
+  def mine_for(year)
+    CSV.foreach('mined_data.csv') do |row|
+      result = self.class.post('http://profiles.sc-ctsi.org/ProfilesSearchAPI/ProfilesSearchAPI.svc/Search', :body => list_publications_by_concept_and_year_api_call_body_xml(row[0], year), :headers => { "Content-Type" => "text/xml"})
+      CSV.open("mined_data_#{year}.csv", 'ab') do |csv|
+        csv << (row << result.parsed_response['RDF']['Description'][0]['numberOfConnections']['__content__'])
+      end
+    end
   end
 
   def next_offset
@@ -109,7 +137,9 @@ end
 result = ''
 miner = ProfilesDataMiner.new
 
-while result != 'Finished'
-  result = miner.mine('2013', 100)
-end
+# while result != 'Finished'
+#  result = miner.mine(100)
+# end
+
+miner.mine_for('2013')
 
