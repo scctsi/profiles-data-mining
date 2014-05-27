@@ -57,7 +57,7 @@ class ProfilesDataMiner
         <ClassGroupURI>http://profiles.catalyst.harvard.edu/ontology/prns#ClassGroupResearch</ClassGroupURI>
         <SearchFiltersList>
           <SearchFilter IsExclude="0" Property="http://vivoweb.org/ontology/core#hasSubjectArea" MatchType="Exact">#{concept_uri}</SearchFilter>
-          <SearchFilter IsExclude="0" Property="http://profiles.catalyst.harvard.edu/ontology/prns#year" MatchType="Exact">#{1980}{publication_year}</SearchFilter>
+          <SearchFilter IsExclude="0" Property="http://profiles.catalyst.harvard.edu/ontology/prns#year" MatchType="Exact">#{publication_year}</SearchFilter>
         </SearchFiltersList>
       </MatchOptions>
       <OutputOptions>
@@ -102,7 +102,16 @@ class ProfilesDataMiner
     CSV.foreach('mined_data.csv') do |row|
       result = self.class.post('http://profiles.sc-ctsi.org/ProfilesSearchAPI/ProfilesSearchAPI.svc/Search', :body => list_publications_by_concept_and_year_api_call_body_xml(row[0], year), :headers => { "Content-Type" => "text/xml"})
       CSV.open("mined_data_#{year}.csv", 'ab') do |csv|
-        csv << (row << result.parsed_response['RDF']['Description'][0]['numberOfConnections']['__content__'])
+        p result.parsed_response
+        if result.parsed_response['RDF'] == nil
+          number_of_publications = "0"
+        elsif result.parsed_response['RDF']['Description'].is_a?(Hash)
+          number_of_publications = result.parsed_response['RDF']['Description']['numberOfConnections']['__content__']
+        else
+          number_of_publications = result.parsed_response['RDF']['Description'][0]['numberOfConnections']['__content__']
+        end
+        row = row << number_of_publications
+        csv << row
       end
     end
   end
